@@ -45,6 +45,21 @@ def _captcha_detected(page) -> bool:
     )
 
 
+def _launch_browser(chromium):
+    failures = []
+    for options in ({}, {"channel": "chrome"}, {"channel": "msedge"}):
+        try:
+            return chromium.launch(headless=True, **options)
+        except PlaywrightError as error:
+            failures.append(str(error))
+
+    raise RankCheckError(
+        "مرورگر Chromium در کنار پروژه و Chrome/Edge نصب‌شده پیدا نشد. "
+        "اتصال اینترنت را بررسی کنید و `run.bat` را دوباره اجرا کنید تا Chromium نصب شود. "
+        f"جزئیات: {failures[-1]}"
+    )
+
+
 def check_google_rank(
     query: str, target_domain: str, max_pages: int = 3
 ) -> dict:
@@ -58,7 +73,7 @@ def check_google_rank(
     rank = 0
     try:
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(headless=True)
+            browser = _launch_browser(playwright.chromium)
             try:
                 context = browser.new_context(locale="fa-IR")
                 page = context.new_page()

@@ -1,7 +1,13 @@
 import pytest
+from playwright.sync_api import Error as PlaywrightError
 
 import rank_checker
-from rank_checker import check_google_rank, domain_matches, normalize_domain
+from rank_checker import (
+    _launch_browser,
+    check_google_rank,
+    domain_matches,
+    normalize_domain,
+)
 
 
 @pytest.mark.parametrize(
@@ -122,3 +128,34 @@ def test_check_stops_and_closes_browser_on_captcha(monkeypatch):
     assert result["status"] == "captcha"
     assert result["rank"] is None
     assert browser.closed
+
+
+def test_browser_launcher_falls_back_to_installed_chrome():
+    browser = object()
+
+    class Chromium:
+        def __init__(self):
+            self.attempts = []
+
+        def launch(self, **options):
+            self.attempts.append(options)
+            if options.get("channel") != "chrome":
+                raise PlaywrightError("browser executable missing")
+            return browser
+
+    chromium = Chromium()
+
+    assert _launch_browser(chromium) is browser
+    assert chromium.attempts == [
+        {"headless": True},
+        {"headless": True, "channel": "chrome"},
+    ]
+
+
+def test_browser_launcher_reports_actionable_error_when_no_browser_exists():
+    class Chromium:
+        def launch(self, **_options):
+            raise PlaywrightError("browser executable missing")
+
+    with pytest.raises(rank_checker.RankCheckError, match="run.bat"):
+        _launch_browser(Chromium())
