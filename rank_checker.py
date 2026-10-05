@@ -60,6 +60,12 @@ def _launch_browser(chromium):
     )
 
 
+def verify_browser() -> None:
+    with sync_playwright() as playwright:
+        browser = _launch_browser(playwright.chromium)
+        browser.close()
+
+
 def check_google_rank(
     query: str, target_domain: str, max_pages: int = 3
 ) -> dict:

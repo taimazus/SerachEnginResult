@@ -143,9 +143,22 @@ for keyword in keywords:
         if history:
             st.caption("آخرین بررسی‌ها")
             for check in history:
-                rank_text = (
-                    f"رتبهٔ {check['rank']} (صفحهٔ {check['result_page']})"
-                    if check["status"] == "found"
-                    else check["message"]
-                )
+                if check["status"] == "found":
+                    rank_text = (
+                        f"رتبهٔ {check['rank']} (صفحهٔ {check['result_page']})"
+                    )
+                elif check["status"] == "error" and (
+                    "Executable doesn't exist" in check["message"]
+                    or "Playwright was just installed" in check["message"]
+                ):
+                    rank_text = (
+                        "اجرای قبلی به‌دلیل آماده‌نبودن مرورگر ناموفق شد؛ "
+                        "اکنون دوباره بررسی کنید."
+                    )
+                elif check["status"] == "error":
+                    rank_text = check["message"][:240]
+                    if len(check["message"]) > 240:
+                        rank_text += "…"
+                else:
+                    rank_text = check["message"]
                 st.write(f"{check['checked_at']} · {rank_text}")

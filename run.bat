@@ -24,16 +24,20 @@ if errorlevel 1 (
     if errorlevel 1 goto setup_failed
 )
 
-if not exist "browser-runtime\.chromium-installed" (
-    if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" goto launch_app
-    if exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" goto launch_app
-    if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" goto launch_app
-    if exist "%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe" goto launch_app
-    if exist "%LOCALAPPDATA%\Microsoft\Edge\Application\msedge.exe" goto launch_app
-    "%PYTHON%" -m playwright install chromium
-    if errorlevel 1 goto browser_install_warning
-    >"browser-runtime\.chromium-installed" echo installed
-)
+"%PYTHON%" -c "from rank_checker import verify_browser; verify_browser()" >nul 2>&1
+if not errorlevel 1 goto launch_app
+
+if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" goto launch_app
+if exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" goto launch_app
+if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" goto launch_app
+if exist "%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe" goto launch_app
+if exist "%LOCALAPPDATA%\Microsoft\Edge\Application\msedge.exe" goto launch_app
+
+"%PYTHON%" -m playwright install chromium
+if errorlevel 1 goto browser_install_warning
+
+"%PYTHON%" -c "from rank_checker import verify_browser; verify_browser()" >nul 2>&1
+if errorlevel 1 goto browser_install_warning
 
 :launch_app
 "%PYTHON%" -m streamlit run app.py --server.address 127.0.0.1

@@ -7,6 +7,7 @@ from rank_checker import (
     check_google_rank,
     domain_matches,
     normalize_domain,
+    verify_browser,
 )
 
 
@@ -159,3 +160,14 @@ def test_browser_launcher_reports_actionable_error_when_no_browser_exists():
 
     with pytest.raises(rank_checker.RankCheckError, match="run.bat"):
         _launch_browser(Chromium())
+
+
+def test_verify_browser_closes_a_successfully_launched_browser(monkeypatch):
+    browser = FakeBrowser([])
+    monkeypatch.setattr(
+        rank_checker, "sync_playwright", lambda: FakePlaywrightManager(browser)
+    )
+
+    verify_browser()
+
+    assert browser.closed
