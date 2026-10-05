@@ -31,6 +31,8 @@ A local web app for organizing projects, search queries, target domains, and ran
 
 On first run, the batch file downloads the Python packages. If Chrome or Edge is installed, no separate browser download is needed; otherwise it attempts to download Chromium. Keep it open until the local page starts, usually at `http://localhost:8501`. If no browser can be obtained, the UI still opens and a rank check reports how to proceed.
 
+If an older app version is still open in the browser, close its previous run window, start `run.bat` again, and refresh the page so the updated code is loaded. Failed earlier runs remain in history but are shown as concise messages.
+
 For manual setup:
 
 ```powershell

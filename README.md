@@ -13,6 +13,8 @@ A local Persian-first web app for tracking Google search-result positions for mu
 
 Setup requires internet access to install dependencies and the browser. Google searches also require internet access. CAPTCHA is not bypassed: a check stops if one is detected.
 
+If the browser still shows errors from an older app process, restart the previous run, launch `run.bat` again, and refresh the page. Prior failures remain in history as concise messages.
+
 ## Local data and privacy
 
 Projects and check history are stored in `rank_tracker.sqlite3` beside the app. The app binds to `127.0.0.1` and has no cloud backend. The Persian UI and Vazirmatn font are served from local project files.
