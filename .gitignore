@@ -1,0 +1,8 @@
+__pycache__/
+.pytest_cache/
+.venv/
+browser-runtime/
+rank_tracker.sqlite3
+rank_tracker.sqlite3-*
+playwright-report/
+test-results/
